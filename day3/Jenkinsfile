@@ -1,1 +1,9 @@
-echo 'hello there!'
+node('jenkins-python') {
+    stage('build') {
+        container('python') {
+            checkout scm
+            sh 'python day3/buildme.py'
+        }
+    }
+}
+
