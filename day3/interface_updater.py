@@ -19,6 +19,7 @@ HOST_NAT_MAP = {
     "spine1": 2211,
 }
 
+
 def main():
     stuff = json.loads(PAYLOAD)
 
@@ -28,10 +29,20 @@ def main():
 
     print(f"device {device} interface {intf} description now {new_descr}")
 
-    with Scrapli(host="student-gillespie.us-west1-a",port=HOST_NAT_MAP[device],transport="paramiko",auth_username="admin",auth_password="admin",auth_strict_key=False,platform=DC_DEVICE_PLATFORM_MAP[device]) as  conn:
-        current_descr = conn.send_command(command=f"show run interface {intf} | inc descr")
+    with Scrapli(
+        host="student-gillespie.us-west1-a",
+        port=HOST_NAT_MAP[device],
+        transport="paramiko",
+        auth_username="admin",
+        auth_password="admin",
+        auth_strict_key=False,
+        platform=DC_DEVICE_PLATFORM_MAP[device],
+    ) as conn:
+        current_descr = conn.send_command(
+            command=f"show run interface {intf} | inc descr"
+        )
         if current_descr.result.strip() == new_descr:
-            print("currnt descr matches, nothing to do")
+            print("current descr matches, nothing to do")
             return
         conn.send_configs(configs=[f"interface {intf}", f"description {new_descr}"])
         print("intf updated")
